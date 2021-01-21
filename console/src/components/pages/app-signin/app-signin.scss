@@ -1,0 +1,13 @@
+app-signin {
+  .main {
+    max-width: 400px;
+    margin: 100px auto;
+  }
+
+  .google-btn {
+    --background: var(--google-bk-color);
+    --border-color: var(--google-fg-color);
+    --color: var(--google-fg-color);
+    --border-width: 1px;
+  }
+}

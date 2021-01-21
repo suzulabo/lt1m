@@ -1,3 +1,4 @@
+import { RouterEventDetail } from '@ionic/core';
 import { Component, h, State } from '@stencil/core';
 import { App } from 'src/app/app';
 import { AppAuth } from 'src/app/auth';
@@ -37,8 +38,8 @@ export class AppRoot {
     this.initializing = true;
     try {
       await this.app.init();
-    } finally {
       this.initializing = false;
+    } finally {
     }
   }
 
@@ -46,9 +47,22 @@ export class AppRoot {
     return <ion-route url={url} component={component} componentProps={{ app: this.app }} />;
   }
 
+  private handleRotueWillChange = (event: CustomEvent<RouterEventDetail>) => {
+    if (this.app.state.signIn) {
+      if (event.detail.to.startsWith('/signin')) {
+        this.app.router.push('/', 'root');
+      }
+    } else {
+      if (!event.detail.to.startsWith('/signin')) {
+        this.app.router.push('/signin', 'root');
+      }
+    }
+  };
+
   private handleNavRef = (v: HTMLIonNavElement) => {
     this.nav = v;
   };
+
   private handleNavDidChange = async () => {
     const view = await this.nav.getActive();
     if (hasPageEnter(view.element)) {
@@ -71,7 +85,10 @@ export class AppRoot {
 
     return (
       <ion-app>
-        <ion-router useHash={false}>{this.renderRoute('/', 'app-home')}</ion-router>
+        <ion-router useHash={false} onIonRouteWillChange={this.handleRotueWillChange}>
+          {this.renderRoute('/signin', 'app-signin')}
+          {this.renderRoute('/', 'app-home')}
+        </ion-router>
         <ion-nav ref={this.handleNavRef} onIonNavDidChange={this.handleNavDidChange} />
       </ion-app>
     );
